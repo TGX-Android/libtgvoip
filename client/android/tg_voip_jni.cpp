@@ -206,16 +206,13 @@ namespace tgvoip {
 	void VoIPController_nativeSetRemoteEndpoints(JNIEnv* env, jobject thiz, jlong inst, jobjectArray endpoints, jboolean allowP2p, jboolean tcp, jint connectionMaxLayer){
 		size_t len=(size_t) env->GetArrayLength(endpoints);
 		std::vector<Endpoint> eps;
-		/*public String ip;
-			public String ipv6;
-			public int port;
-			public byte[] peer_tag;*/
 		jclass epClass=env->GetObjectClass(env->GetObjectArrayElement(endpoints, 0));
-		jfieldID ipFld=env->GetFieldID(epClass, "ip", "Ljava/lang/String;");
-		jfieldID ipv6Fld=env->GetFieldID(epClass, "ipv6", "Ljava/lang/String;");
+		jfieldID ipFld=env->GetFieldID(epClass, "ipAddress", "Ljava/lang/String;");
+		jfieldID ipv6Fld=env->GetFieldID(epClass, "ipv6Address", "Ljava/lang/String;");
 		jfieldID portFld=env->GetFieldID(epClass, "port", "I");
-		jfieldID peerTagFld=env->GetFieldID(epClass, TGVOIP_PEER_TAG_VARIABLE_NAME, "[B");
 		jfieldID idFld=env->GetFieldID(epClass, "id", "J");
+		jfieldID typeFld=env->GetFieldID(epClass, "type", "Lorg/drinkless/td/libcore/telegram/TdApi$CallServerType;");
+		jfieldID peerTagFld=0;
 		int i;
 		for(i=0;i<len;i++){
 			jobject endpoint=env->GetObjectArrayElement(endpoints, i);
@@ -223,7 +220,12 @@ namespace tgvoip {
 			jstring ipv6=(jstring) env->GetObjectField(endpoint, ipv6Fld);
 			jint port=env->GetIntField(endpoint, portFld);
 			jlong id=env->GetLongField(endpoint, idFld);
-			jbyteArray peerTag=(jbyteArray) env->GetObjectField(endpoint, peerTagFld);
+			jobject type=env->GetObjectField(endpoint, typeFld);
+			if (peerTagFld == 0) {
+				jclass typeClass=env->GetObjectClass(type);
+				peerTagFld=env->GetFieldID(typeClass, "peerTag", "[B");
+			}
+			jbyteArray peerTag=(jbyteArray) env->GetObjectField(type, peerTagFld);
 			IPv4Address v4addr(jni::JavaStringToStdString(env, ip));
 			IPv6Address v6addr("::0");
 			if(ipv6 && env->GetStringLength(ipv6)){
