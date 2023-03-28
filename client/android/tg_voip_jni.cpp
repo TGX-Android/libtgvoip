@@ -533,7 +533,9 @@ namespace tgvoip {
 
 extern "C" void tgvoipRegisterNatives(JNIEnv* env){
 	jclass controller=env->FindClass(TGVOIP_PACKAGE_PATH "/VoIPController");
+#ifndef TGVOIP_NO_GROUP_CALLS
 	jclass groupController=env->FindClass(TGVOIP_PACKAGE_PATH "/VoIPGroupController");
+#endif
 	if(env->ExceptionCheck()){
 		env->ExceptionClear(); // is returning NULL from FindClass not enough?
 	}
@@ -605,7 +607,7 @@ extern "C" void tgvoipRegisterNatives(JNIEnv* env){
 			{"nativeGetVersion", "()Ljava/lang/String;", (void*)&tgvoip::VoIPController_nativeGetVersion},
 			{"nativeGetPreferredRelayID", "(J)J", (void*)&tgvoip::VoIPController_nativeGetPreferredRelayID},
 			{"nativeGetLastError", "(J)I", (void*)&tgvoip::VoIPController_nativeGetLastError},
-			{"nativeGetStats", "(JL" TGVOIP_PACKAGE_PATH "/VoIPController$Stats;)V", (void*)&tgvoip::VoIPController_nativeGetStats},
+			{"nativeGetStats", "(JL" TGVOIP_PACKAGE_PATH "/NetworkStats;)V", (void*)&tgvoip::VoIPController_nativeGetStats},
 			{"nativeGetDebugLog", "(J)Ljava/lang/String;", (void*)&tgvoip::VoIPController_nativeGetDebugLog},
 			{"nativeSetAudioOutputGainControlEnabled", "(JZ)V", (void*)&tgvoip::VoIPController_nativeSetAudioOutputGainControlEnabled},
 			{"nativeSetEchoCancellationStrength", "(JI)V", (void*)&tgvoip::VoIPController_nativeSetEchoCancellationStrength},
