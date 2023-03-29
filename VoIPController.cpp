@@ -66,6 +66,7 @@ extern jclass jniUtilitiesClass;
 
 #pragma mark - OpenSSL wrappers
 
+#ifndef TGVOIP_NO_CRYPTO_INIT
 #ifndef TGVOIP_USE_CUSTOM_CRYPTO
 extern "C" {
 #include <openssl/sha.h>
@@ -129,6 +130,7 @@ CryptoFunctions VoIPController::crypto={
 };
 #else
 CryptoFunctions VoIPController::crypto; // set it yourself upon initialization
+#endif
 #endif
 
 
