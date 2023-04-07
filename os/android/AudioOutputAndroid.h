@@ -17,8 +17,8 @@ public:
 
 	AudioOutputAndroid();
 	virtual ~AudioOutputAndroid();
-	virtual void Start();
-	virtual void Stop();
+	virtual void Start() override;
+	virtual void Stop() override;
 	virtual bool IsPlaying() override;
 	void HandleCallback(JNIEnv* env, jbyteArray buffer);
 	static jmethodID initMethod;
