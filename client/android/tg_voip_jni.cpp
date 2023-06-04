@@ -51,7 +51,11 @@ struct ImplDataAndroid{
 #endif
 
 #ifndef TGVOIP_ENDPOINT_CLASS
-#define TGVOIP_ENDPOINT_CLASS "org/telegram/tgnet/TLRPC$TL_phoneConnection"
+#define TGVOIP_ENDPOINT_CLASS "org/drinkless/tdlib/TdApi$CallServer"
+#endif
+
+#ifndef TGVOIP_ENDPOINT_TYPE_CLASS
+#define TGVOIP_ENDPOINT_TYPE_CLASS "org/drinkless/tdlib/TdApi$CallServerType"
 #endif
 
 using namespace tgvoip;
@@ -211,7 +215,7 @@ namespace tgvoip {
 		jfieldID ipv6Fld=env->GetFieldID(epClass, "ipv6Address", "Ljava/lang/String;");
 		jfieldID portFld=env->GetFieldID(epClass, "port", "I");
 		jfieldID idFld=env->GetFieldID(epClass, "id", "J");
-		jfieldID typeFld=env->GetFieldID(epClass, "type", "Lorg/drinkless/td/libcore/telegram/TdApi$CallServerType;");
+		jfieldID typeFld=env->GetFieldID(epClass, "type", "L" TGVOIP_ENDPOINT_TYPE_CLASS ";");
 		jfieldID peerTagFld=0;
 		int i;
 		for(i=0;i<len;i++){
