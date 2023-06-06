@@ -1326,7 +1326,7 @@ void VoIPController::WritePacketHeader(uint32_t pseq, BufferOutputStream *s, uns
 		if(!currentExtras.empty()){
 			s->WriteByte(static_cast<unsigned char>(currentExtras.size()));
 			for(vector<UnacknowledgedExtraData>::iterator x=currentExtras.begin(); x!=currentExtras.end(); ++x){
-				LOGV("Writing extra into header: type %u, length %lu", x->type, x->data.Length());
+				LOGV("Writing extra into header: type %u, length %zu", x->type, x->data.Length());
 				assert(x->data.Length()<=254);
 				s->WriteByte(static_cast<unsigned char>(x->data.Length()+1));
 				s->WriteByte(x->type);
@@ -1408,7 +1408,7 @@ void VoIPController::WritePacketHeader(uint32_t pseq, BufferOutputStream *s, uns
 					s->WriteByte(XPFLAG_HAS_EXTRA);
 					s->WriteByte(static_cast<unsigned char>(currentExtras.size()));
 					for(vector<UnacknowledgedExtraData>::iterator x=currentExtras.begin(); x!=currentExtras.end(); ++x){
-						LOGV("Writing extra into header: type %u, length %lu", x->type, x->data.Length());
+						LOGV("Writing extra into header: type %u, length %zu", x->type, x->data.Length());
 						assert(x->data.Length()<=254);
 						s->WriteByte(static_cast<unsigned char>(x->data.Length()+1));
 						s->WriteByte(x->type);
@@ -2134,7 +2134,7 @@ simpleAudioBlock random_id:long random_bytes:string raw_data:string = DecryptedA
 		}
 		for(vector<UnacknowledgedExtraData>::iterator x=currentExtras.begin();x!=currentExtras.end();){
 			if(x->firstContainingSeq!=0 && (lastRemoteAckSeq==x->firstContainingSeq || seqgt(lastRemoteAckSeq, x->firstContainingSeq))){
-				LOGV("Peer acknowledged extra type %u length %lu", x->type, x->data.Length());
+				LOGV("Peer acknowledged extra type %u length %zu", x->type, x->data.Length());
 				ProcessAcknowledgedOutgoingExtra(*x);
 				x=currentExtras.erase(x);
 				continue;
@@ -3184,7 +3184,7 @@ void VoIPController::SendPacketReliably(unsigned char type, unsigned char *data,
 
 void VoIPController::SendExtra(Buffer &data, unsigned char type){
 	MutexGuard m(queuedPacketsMutex);
-	LOGV("Sending extra type %u length %lu", type, data.Length());
+	LOGV("Sending extra type %u length %zu", type, data.Length());
 	for(vector<UnacknowledgedExtraData>::iterator x=currentExtras.begin();x!=currentExtras.end();++x){
 		if(x->type==type){
 			x->firstContainingSeq=0;
