@@ -20,6 +20,7 @@
 #include "../../audio/Resampler.h"
 #include "../../os/android/JNIUtilities.h"
 #include "../../PrivateDefines.h"
+#include <jni_utils.h>
 
 #ifdef TGVOIP_HAS_CONFIG
 #include <tgvoip_config.h>
@@ -186,24 +187,24 @@ namespace tgvoip {
 			jmethodID getMaxResolutionMethod=env->GetStaticMethodID(jniUtilitiesClass, "getMaxVideoResolution", "()I");
 			video::VideoRendererAndroid::maxResolution=env->CallStaticIntMethod(jniUtilitiesClass, getMaxResolutionMethod);
 		}*/
-		return (jlong)(intptr_t)cntrlr;
+		return ::jni::ptr_to_jlong(cntrlr);
 	}
 
 	void VoIPController_nativeStart(JNIEnv* env, jobject thiz, jlong inst){
-		((VoIPController*)(intptr_t)inst)->Start();
+		::jni::jlong_to_ptr<VoIPController*>(inst)->Start();
 	}
 
 	void VoIPController_nativeConnect(JNIEnv* env, jobject thiz, jlong inst){
-		((VoIPController*)(intptr_t)inst)->Connect();
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->Connect();
 	}
 
 	void VoIPController_nativeSetProxy(JNIEnv* env, jobject thiz, jlong inst, jstring _address, jint port, jstring _username, jstring _password){
-		((VoIPController*)(intptr_t)inst)->SetProxy(PROXY_SOCKS5, jni::JavaStringToStdString(env, _address), (uint16_t)port, jni::JavaStringToStdString(env, _username), jni::JavaStringToStdString(env, _password));
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->SetProxy(PROXY_SOCKS5, jni::JavaStringToStdString(env, _address), (uint16_t)port, jni::JavaStringToStdString(env, _username), jni::JavaStringToStdString(env, _password));
 	}
 
 	void VoIPController_nativeSetEncryptionKey(JNIEnv* env, jobject thiz, jlong inst, jbyteArray key, jboolean isOutgoing){
 		jbyte* akey=env->GetByteArrayElements(key, NULL);
-		((VoIPController*)(intptr_t)inst)->SetEncryptionKey((char *) akey, isOutgoing);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->SetEncryptionKey((char *) akey, isOutgoing);
 		env->ReleaseByteArrayElements(key, akey, JNI_ABORT);
 	}
 
@@ -243,7 +244,7 @@ namespace tgvoip {
 			}
 			eps.push_back(Endpoint((int64_t)id, (uint16_t)port, v4addr, v6addr, tcp ? Endpoint::Type::TCP_RELAY : Endpoint::Type::UDP_RELAY, pTag));
 		}
-		((VoIPController*)(intptr_t)inst)->SetRemoteEndpoints(eps, allowP2p, connectionMaxLayer);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->SetRemoteEndpoints(eps, allowP2p, connectionMaxLayer);
 	}
 
 	void VoIPController_nativeSetNativeBufferSize(JNIEnv* env, jclass thiz, jint size){
@@ -254,7 +255,7 @@ namespace tgvoip {
 	void VoIPController_nativeRelease(JNIEnv* env, jobject thiz, jlong inst){
 		//env->DeleteGlobalRef(AudioInputAndroid::jniClass);
 
-		VoIPController* ctlr=((VoIPController*)(intptr_t)inst);
+		VoIPController* ctlr=::jni::jlong_to_ptr<VoIPController*>(inst);
 		ImplDataAndroid* impl=(ImplDataAndroid*)ctlr->implData;
 		ctlr->Stop();
 		std::vector<uint8_t> state=ctlr->GetPersistentState();
@@ -271,16 +272,16 @@ namespace tgvoip {
 	}
 
 	jstring VoIPController_nativeGetDebugString(JNIEnv* env, jobject thiz, jlong inst){
-		std::string str=((VoIPController*)(intptr_t)inst)->GetDebugString();
+		std::string str=::jni::jlong_to_ptr<VoIPController*>(inst)->GetDebugString();
 		return env->NewStringUTF(str.c_str());
 	}
 
 	void VoIPController_nativeSetNetworkType(JNIEnv* env, jobject thiz, jlong inst, jint type){
-		((VoIPController*)(intptr_t)inst)->SetNetworkType(type);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->SetNetworkType(type);
 	}
 
 	void VoIPController_nativeSetMicMute(JNIEnv* env, jobject thiz, jlong inst, jboolean mute){
-		((VoIPController*)(intptr_t)inst)->SetMicMute(mute);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->SetMicMute(mute);
 	}
 
 	void VoIPController_nativeSetConfig(JNIEnv* env, jobject thiz, jlong inst, jdouble recvTimeout, jdouble initTimeout, jint dataSavingMode, jboolean enableAEC, jboolean enableNS, jboolean enableAGC, jstring logFilePath, jstring statsDumpPath, jboolean logPacketStats){
@@ -300,11 +301,11 @@ namespace tgvoip {
 			cfg.statsDumpFilePath=jni::JavaStringToStdString(env, statsDumpPath);
 		}
 
-		((VoIPController*)(intptr_t)inst)->SetConfig(cfg);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->SetConfig(cfg);
 	}
 
 	void VoIPController_nativeDebugCtl(JNIEnv* env, jobject thiz, jlong inst, jint request, jint param){
-		((VoIPController*)(intptr_t)inst)->DebugCtl(request, param);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->DebugCtl(request, param);
 	}
 
 	jstring VoIPController_nativeGetVersion(JNIEnv* env, jclass clasz){
@@ -312,16 +313,16 @@ namespace tgvoip {
 	}
 
 	jlong VoIPController_nativeGetPreferredRelayID(JNIEnv* env, jclass clasz, jlong inst){
-		return ((VoIPController*)(intptr_t)inst)->GetPreferredRelayID();
+		return ::jni::jlong_to_ptr<VoIPController*>(inst)->GetPreferredRelayID();
 	}
 
 	jint VoIPController_nativeGetLastError(JNIEnv* env, jclass clasz, jlong inst){
-		return ((VoIPController*)(intptr_t)inst)->GetLastError();
+		return ::jni::jlong_to_ptr<VoIPController*>(inst)->GetLastError();
 	}
 
 	void VoIPController_nativeGetStats(JNIEnv* env, jclass clasz, jlong inst, jobject stats){
 		VoIPController::TrafficStats _stats;
-		((VoIPController*)(intptr_t)inst)->GetStats(&_stats);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->GetStats(&_stats);
 		jclass cls=env->GetObjectClass(stats);
 		env->SetLongField(stats, env->GetFieldID(cls, "bytesSentWifi", "J"), _stats.bytesSentWifi);
 		env->SetLongField(stats, env->GetFieldID(cls, "bytesSentMobile", "J"), _stats.bytesSentMobile);
@@ -330,43 +331,49 @@ namespace tgvoip {
 	}
 
 	jstring VoIPController_nativeGetDebugLog(JNIEnv* env, jobject thiz, jlong inst){
-		VoIPController* ctlr=((VoIPController*)(intptr_t)inst);
+		VoIPController* ctlr=::jni::jlong_to_ptr<VoIPController*>(inst);
 		std::string log=ctlr->GetDebugLog();
 		return env->NewStringUTF(log.c_str());
 	}
 
 	void VoIPController_nativeSetAudioOutputGainControlEnabled(JNIEnv* env, jclass clasz, jlong inst, jboolean enabled){
-		((VoIPController*)(intptr_t)inst)->SetAudioOutputGainControlEnabled(enabled);
+    ::jni::jlong_to_ptr<VoIPController*>(inst)->SetAudioOutputGainControlEnabled(enabled);
 	}
 
 	void VoIPController_nativeSetEchoCancellationStrength(JNIEnv* env, jclass cls, jlong inst, jint strength){
-		((VoIPController*)(intptr_t)inst)->SetEchoCancellationStrength(strength);
+		::jni::jlong_to_ptr<VoIPController*>(inst)->SetEchoCancellationStrength(strength);
 	}
 
 	jint VoIPController_nativeGetPeerCapabilities(JNIEnv* env, jclass cls, jlong inst){
-		return ((VoIPController*)(intptr_t)inst)->GetPeerCapabilities();
+		return ::jni::jlong_to_ptr<VoIPController*>(inst)->GetPeerCapabilities();
 	}
 
 	void VoIPController_nativeSendGroupCallKey(JNIEnv* env, jclass cls, jlong inst, jbyteArray _key){
 		jbyte* key=env->GetByteArrayElements(_key, NULL);
-		((VoIPController*)(intptr_t)inst)->SendGroupCallKey((unsigned char *) key);
+		::jni::jlong_to_ptr<VoIPController*>(inst)->SendGroupCallKey((unsigned char *) key);
 		env->ReleaseByteArrayElements(_key, key, JNI_ABORT);
 	}
 
 	void VoIPController_nativeRequestCallUpgrade(JNIEnv* env, jclass cls, jlong inst){
-		((VoIPController*)(intptr_t)inst)->RequestCallUpgrade();
+		::jni::jlong_to_ptr<VoIPController*>(inst)->RequestCallUpgrade();
 	}
 
-	void VoIPController_nativeSetVideoSource(JNIEnv* env, jobject thiz, jlong inst, jlong source){
-		((VoIPController*)(intptr_t)inst)->SetVideoSource((video::VideoSource*)(intptr_t)source);
+	void VoIPController_nativeSetVideoSource(JNIEnv* env, jobject thiz, jlong inst, jlong jSource){
+    auto source = ::jni::jlong_to_ptr<video::VideoSource*>(jSource);
+		::jni::jlong_to_ptr<VoIPController*>(inst)->SetVideoSource(source);
 	}
 
-	void VoIPController_nativeSetVideoRenderer(JNIEnv* env, jobject thiz, jlong inst, jlong renderer){
-		((VoIPController*)(intptr_t)inst)->SetVideoRenderer((video::VideoRenderer*)(intptr_t)renderer);
+	void VoIPController_nativeSetVideoRenderer(JNIEnv* env, jobject thiz, jlong inst, jlong jRenderer){
+    auto renderer = ::jni::jlong_to_ptr<video::VideoRenderer*>(jRenderer);
+		::jni::jlong_to_ptr<VoIPController*>(inst)->SetVideoRenderer(renderer);
 	}
 
 	jboolean VoIPController_nativeNeedRate(JNIEnv* env, jclass cls, jlong inst){
-		return static_cast<jboolean>(((VoIPController*)(intptr_t)inst)->NeedRate());
+    if (::jni::jlong_to_ptr<VoIPController*>(inst)->NeedRate()) {
+      return JNI_TRUE;
+    } else {
+      return JNI_FALSE;
+    }
 	}
 
 	jint VoIPController_getConnectionMaxLayer(JNIEnv* env, jclass cls){
@@ -377,7 +384,7 @@ namespace tgvoip {
 
 	void AudioRecordJNI_nativeCallback(JNIEnv* env, jobject thiz, jobject buffer){
 		jlong inst=env->GetLongField(thiz, audioRecordInstanceFld);
-		AudioInputAndroid* in=(AudioInputAndroid*)(intptr_t)inst;
+    AudioInputAndroid* in=::jni::jlong_to_ptr<AudioInputAndroid *>(inst);
 		in->HandleCallback(env, buffer);
 	}
 
@@ -385,7 +392,7 @@ namespace tgvoip {
 
 	void AudioTrackJNI_nativeCallback(JNIEnv* env, jobject thiz, jbyteArray buffer){
 		jlong inst=env->GetLongField(thiz, audioTrackInstanceFld);
-		AudioOutputAndroid* in=(AudioOutputAndroid*)(intptr_t)inst;
+		AudioOutputAndroid* in=::jni::jlong_to_ptr<AudioOutputAndroid *>(inst);
 		in->HandleCallback(env, buffer);
 	}
 
@@ -500,11 +507,11 @@ namespace tgvoip {
 #pragma mark - VideoSource
 
 	jlong VideoSource_nativeInit(JNIEnv* env, jobject thiz){
-		return (jlong)(intptr_t)new video::VideoSourceAndroid(env->NewGlobalRef(thiz));
+    return ::jni::ptr_to_jlong(new video::VideoSourceAndroid(env->NewGlobalRef(thiz)));
 	}
 
 	void VideoSource_nativeRelease(JNIEnv* env, jobject thiz, jlong inst){
-		delete (video::VideoSource*)(intptr_t)inst;
+		delete ::jni::jlong_to_ptr<video::VideoSource*>(inst);
 	}
 
 	void VideoSource_nativeSetVideoStreamParameters(JNIEnv* env, jobject thiz, jlong inst, jobjectArray _csd, jint width, jint height){
@@ -518,20 +525,20 @@ namespace tgvoip {
 				csd.push_back(std::move(buf));
 			}
 		}
-		((video::VideoSourceAndroid*)(intptr_t)inst)->SetStreamParameters(std::move(csd), width, height);
+		::jni::jlong_to_ptr<video::VideoSourceAndroid*>(inst)->SetStreamParameters(std::move(csd), width, height);
 	}
 
 	void VideoSource_nativeSendFrame(JNIEnv* env, jobject thiz, jlong inst, jobject buffer, jint offset, jint length, jint flags){
 		size_t bufsize=(size_t)env->GetDirectBufferCapacity(buffer);
 		Buffer buf(static_cast<size_t>(length));
 		buf.CopyFrom(((char*)env->GetDirectBufferAddress(buffer))+offset, 0, static_cast<size_t>(length));
-		((video::VideoSourceAndroid*)(intptr_t)inst)->SendFrame(std::move(buf), static_cast<uint32_t>(flags));
+    ::jni::jlong_to_ptr<video::VideoSourceAndroid*>(inst)->SendFrame(std::move(buf), static_cast<uint32_t>(flags));
 	}
 
 #pragma mark - VideoRenderer
 
 	jlong VideoRenderer_nativeInit(JNIEnv* env, jobject thiz){
-		return (jlong)(intptr_t)new video::VideoRendererAndroid(env->NewGlobalRef(thiz));
+		return ::jni::ptr_to_jlong(new video::VideoRendererAndroid(env->NewGlobalRef(thiz)));
 	}
 }
 
